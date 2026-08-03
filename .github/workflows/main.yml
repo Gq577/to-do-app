@@ -9,8 +9,8 @@ jobs:
   test-the-code:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-node@v6.2.0
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v6.5.0
       - name: install freamworks
         run: npm ci
       - name: test by jest
