@@ -2,10 +2,11 @@
   "name": "front_end",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     
-  "test": "jest --runInBand --forceExit"
+  "test": "jest --runInBand --forceExit",
+  "start": "node server.js"
   },
   "keywords": [],
   "author": "",
