@@ -47,5 +47,25 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USER }}/to-do-app:latest
             ${{ secrets.DOCKER_USER }}/to-do-app:${{ github.sha }}
+
           
-        
+  cd:
+    needs: build-and-push
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: connent-to-EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            docker stop to-do-app-continaer || true
+            docker rm to-do-app-continaer || true
+            docker pull ${{ secrets.DOCKER_USER }}/to-do-app:latest
+            docker run -d -p 80:3000 --name to-do-app-continaer ${{ secrets.DOCKER_USER }}/to-do-app:latest
+            docker image prune -f
+          
+      
+    
