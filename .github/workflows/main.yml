@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-node@v6.5.0
       - name: install freamworks
         run: npm install
+      - name: install jest
+        run: npm install --save-dev jest supertest mongodb-memory-server
       - name: test by jest
         run: npm test
 
