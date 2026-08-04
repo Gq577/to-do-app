@@ -59,8 +59,9 @@ jobs:
         with:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
+            mkdir hi
             docker stop to-do-app-continaer || true
             docker rm to-do-app-continaer || true
             docker pull ${{ secrets.DOCKER_USER }}/to-do-app:latest
