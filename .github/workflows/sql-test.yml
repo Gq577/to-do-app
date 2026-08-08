@@ -2,6 +2,8 @@ name: Node.js CI with Real MySQL
 
 on:
   workflow_dispatch: 
+  push:
+    branches: ["master" , "main" , "mysql"]
 
 jobs:
   integration-test:
