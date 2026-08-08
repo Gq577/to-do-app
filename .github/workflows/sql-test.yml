@@ -31,7 +31,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # تجهيز الجدول المطلوب قبل تشغيل الاختبارات
+  
       - name: Create Database Tables
         run: |
           mysql -h 127.0.0.1 -u root -ptestpassword test_app_db -e "
@@ -93,7 +93,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            mkdir hi
+            
             docker stop to-do-app-continaer || true
             docker rm to-do-app-continaer || true
             docker pull ${{ secrets.DOCKER_USER }}/to-do-app:latest
