@@ -1,5 +1,4 @@
 const request = require("supertest");
-const request = require("supertest");
 const { app, pool } = require("./server");
 
 describe("POST /api Integration Tests", () => {
