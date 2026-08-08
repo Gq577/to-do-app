@@ -1,52 +1,36 @@
 const request = require("supertest");
-const { MongoMemoryServer } = require("mongodb-memory-server");
+const request = require("supertest");
+const { app, pool } = require("./server");
 
-let mongoServer;
-let app;
+describe("POST /api Integration Tests", () => {
 
-beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    const uri = mongoServer.getUri();
-    process.env.MONGO_URI = uri;
-    
-    app = require("./server.js").app;
-});
-
-afterAll(async () => {
-    if (mongoServer) {
-        await mongoServer.stop({ cleanup: true }); 
-    }
-});
-
-describe("Habit Tracker API Tests", () => {
-    test("GET / - Should return 200 OK", async () => {
-        const response = await request(app).get("/");
-        expect(response.statusCode).toBe(200);
+    afterAll(async () => {
+        await pool.end();
     });
 
-    test("POST /api - Should save habit data successfully", async () => {
-        const habitData = {
-            sport: "yes",
-            study: "no",
-            sleep: "23:00",
-            wakeup: "07:00"
-        };
-
+    it("should return status 400 when required fields are missing", async () => {
         const response = await request(app)
             .post("/api")
-            .send(habitData);
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.message).toBe("Saved successfully");
-    });
-
-    test("POST /api - Should fail if data is missing", async () => {
-        const incompleteData = { sport: "yes" };
-
-        const response = await request(app)
-            .post("/api")
-            .send(incompleteData);
+            .send({ sleep: "23:00" });
 
         expect(response.statusCode).toBe(400);
+        expect(response.body).toEqual({ error: "Missing fields" });
+    });
+
+    it("should save habit data to database and return status 200", async () => {
+        const response = await request(app)
+            .post("/api")
+            .send({
+                study: true,
+                sport: true,
+                sleep: "22:30",
+                wakeup: "06:30"
+            });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ message: "Saved successfully" });
+
+        const [rows] = await pool.execute("SELECT * FROM habits WHERE sleep = ? AND wakeup = ?", ["22:30", "06:30"]);
+        expect(rows.length).toBeGreaterThan(0);
     });
 });
