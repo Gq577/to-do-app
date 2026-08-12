@@ -16,15 +16,9 @@ const mysql = require("mysql2/promise");
 async function my_database(data) {
     let study = data.study === "true";
     let sport = data.sport === "true";
-    try {
-        const sql = 'INSERT INTO habits (study, sport , sleep , wakeup) VALUES (?, ?, ? , ?)';
-        const values = [study, sport , data.sleep , data.wakeup];
-        const [result] = await pool.execute(sql, values);
-
-        console.log("good" , result.insertId);
-  } catch (error) {
-        console.log(error)
-  }
+    const sql = 'INSERT INTO habits (study, sport , sleep , wakeup) VALUES (?, ?, ? , ?)';
+    const values = [study, sport , data.sleep , data.wakeup];
+    const [result] = await pool.execute(sql, values);
 }
 const app = express();
 
