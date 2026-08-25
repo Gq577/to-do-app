@@ -49,6 +49,8 @@
     </div>
 </body>
 <script>
+    const token = localStorage.getItem('token');
+
     function $(a){
         return document.getElementById(a)
     };
@@ -56,10 +58,11 @@
           const response =  fetch('/api', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data)
-          });
+          }).then(res  => res.json()).then(data => console.log(data));
     }       
 
     $("button").addEventListener("click",() => {
