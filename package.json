@@ -2,18 +2,26 @@
   "name": "front_end",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "mysql-user-login.js",
   "scripts": {
-    
-  "test": "jest --runInBand --forceExit",
-  "start": "node server.js"
+    "test": "jest --runInBand --forceExit",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongodb": "^7.5.0"
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.5.0",
+    "mysql2": "^3.23.2"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
   }
 }

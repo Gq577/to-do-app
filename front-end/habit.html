@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+        }
+
+        .dark .glass-card {
+            background: rgba(17, 24, 39, 0.74);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .day-cell {
+            min-width: 42px;
+            width: 42px;
+            height: 42px;
+        }
+
+        .habit-name-cell {
+            min-width: 210px;
+        }
+
+        .today-ring {
+            box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.35);
+        }
+
+        .modal-backdrop {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .scrollbar-thin::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.35);
+            border-radius: 999px;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-slate-900 text-gray-800 dark:text-gray-100 transition-colors duration-500">
+
+    <!-- Theme Toggle -->
+    <button onclick="toggleTheme()"
+        class="fixed top-5 right-5 z-40 p-3 rounded-full glass-card text-gray-700 dark:text-gray-200 hover:scale-105 transition-all shadow-md focus:outline-none"
+        aria-label="Toggle Theme">
+        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+    </button>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
+        <!-- Header -->
+        <section class="glass-card rounded-3xl shadow-2xl p-5 sm:p-7 mb-6">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-tr from-indigo-600 to-pink-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold">Habit Tracker</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Welcome <span id="username" class="font-bold text-indigo-600 dark:text-indigo-400">back</span>, stay consistent with your goals.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <button onclick="openAddHabitModal()"
+                        class="px-4 py-3 bg-gradient-to-r from-indigo-600 to-pink-500 hover:from-indigo-700 hover:to-pink-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all active:scale-[0.98]">
+                        <i class="fa-solid fa-plus mr-2"></i>
+                        Add Habit
+                    </button>
+
+                    <button onclick="handleLogout()"
+                        class="px-4 py-3 bg-rose-500/10 hover:bg-rose-500 text-rose-600 dark:text-rose-400 hover:text-white font-bold rounded-xl border border-rose-500/20 transition-all active:scale-[0.98]">
+                        <i class="fa-solid fa-right-from-bracket mr-2"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Toast -->
+        <div id="toast" class="hidden mb-5 p-4 rounded-xl text-center text-sm font-semibold shadow-lg"></div>
+
+        <!-- Summary -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="glass-card rounded-2xl p-5 shadow-xl">
+                <div class="text-sm text-gray-500 dark:text-gray-400">Total Habits</div>
+                <div id="habits-count" class="text-3xl font-bold mt-1">0</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 shadow-xl">
+                <div class="text-sm text-gray-500 dark:text-gray-400">Completions This Month</div>
+                <div id="month-completions" class="text-3xl font-bold mt-1 text-emerald-600 dark:text-emerald-400">0</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 shadow-xl">
+                <div class="text-sm text-gray-500 dark:text-gray-400">Monthly Progress Rate</div>
+                <div id="month-progress" class="text-3xl font-bold mt-1 text-indigo-600 dark:text-indigo-400">0%</div>
+            </div>
+        </section>
+
+        <!-- Habits -->
+        <section class="glass-card rounded-3xl shadow-2xl p-5 sm:p-7 mb-6">
+            <div class="flex items-center justify-between gap-3 mb-5">
+                <div>
+                    <h2 class="text-xl font-bold">My Habits</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Click the check button to record today's progress.</p>
+                </div>
+                <button onclick="loadHabits()" class="p-3 rounded-xl bg-white/60 dark:bg-gray-800/60 hover:bg-white dark:hover:bg-gray-700 transition" title="Refresh">
+                    <i class="fa-solid fa-rotate-right text-gray-500 dark:text-gray-300"></i>
+                </button>
+            </div>
+
+            <div id="habits-list" class="space-y-3"></div>
+
+            <div id="empty-habits" class="hidden text-center py-12">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl mb-4">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <h3 class="font-bold text-lg">No habits found yet</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Add your first habit to start tracking your progress.</p>
+                <button onclick="openAddHabitModal()" class="mt-5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition">
+                    <i class="fa-solid fa-plus mr-2"></i>Add Habit
+                </button>
+            </div>
+        </section>
+
+        <!-- Monthly Table -->
+        <section class="glass-card rounded-3xl shadow-2xl p-5 sm:p-7">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+                <div>
+                    <h2 class="text-xl font-bold">Monthly Progress</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Click on any day cell to toggle habit status for that day.</p>
+                </div>
+
+                <div class="flex items-center justify-between gap-2 bg-white/50 dark:bg-gray-900/40 rounded-xl p-1.5 border border-white/40 dark:border-gray-700">
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition" title="Previous Month">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <div id="month-title" class="min-w-[150px] text-center font-bold"></div>
+                    <button onclick="changeMonth(1)" class="w-10 h-10 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition" title="Next Month">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto scrollbar-thin rounded-2xl border border-gray-200/70 dark:border-gray-700/70">
+                <table class="w-full border-collapse text-sm">
+                    <thead id="calendar-head"></thead>
+                    <tbody id="calendar-body"></tbody>
+                </table>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-5 mt-4 text-xs text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-md bg-emerald-500"></span>
+                    Completed
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-md bg-gray-200 dark:bg-gray-700"></span>
+                    Incomplete
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-md ring-2 ring-indigo-400 bg-transparent"></span>
+                    Today
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add Habit Modal -->
+    <div id="add-habit-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+        <div class="w-full max-w-md glass-card rounded-3xl shadow-2xl p-6 sm:p-7" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-xl font-bold">Add New Habit</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Type a habit you want to commit to.</p>
+                </div>
+                <button onclick="closeAddHabitModal()" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="addHabit(event)" class="space-y-5">
+                <div>
+                    <label for="habit-name" class="block text-sm font-bold text-gray-600 dark:text-gray-300 mb-2">Habit Name</label>
+                    <input id="habit-name" type="text" maxlength="100" required autocomplete="off"
+                        placeholder="e.g., Read for 20 minutes"
+                        class="w-full px-4 py-3 bg-white/60 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                </div>
+
+                <button id="add-habit-btn" type="submit"
+                    class="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-pink-500 hover:from-indigo-700 hover:to-pink-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/20 transition-all active:scale-[0.98]">
+                    Add Habit
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let habits = [];
+        let logs = {};
+        let currentMonth = new Date();
+
+        // ---------------------------
+        // Theme
+        // ---------------------------
+        function applyStoredTheme() {
+            const isDark = localStorage.getItem('theme') === 'dark' ||
+                (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+            document.documentElement.classList.toggle('dark', isDark);
+            document.getElementById('theme-icon').className = isDark
+                ? 'fa-solid fa-sun text-lg'
+                : 'fa-solid fa-moon text-lg';
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('theme-icon').className = isDark
+                ? 'fa-solid fa-sun text-lg'
+                : 'fa-solid fa-moon text-lg';
+            renderCalendar();
+        }
+
+        // ---------------------------
+        // Auth helpers
+        // ---------------------------
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+
+        function decodeTokenPayload(token) {
+            try {
+                const payload = token.split('.')[1];
+                return JSON.parse(decodeURIComponent(
+                    atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+                        .split('')
+                        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join('')
+                ));
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function requireAuth() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/';
+                return false;
+            }
+
+            const payload = decodeTokenPayload(token);
+            if (payload?.username) {
+                document.getElementById('username').textContent = payload.username;
+            }
+            return true;
+        }
+
+        function authHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`
+            };
+        }
+
+        function handleAuthError(response) {
+            if (response.status === 401 || response.status === 403) {
+                localStorage.removeItem('token');
+                window.location.href = '/';
+                return true;
+            }
+            return false;
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('activeUser');
+            window.location.href = '/';
+        }
+
+        // ---------------------------
+        // Date helpers
+        // ---------------------------
+        function pad(value) {
+            return String(value).padStart(2, '0');
+        }
+
+        function toDateKey(year, monthIndex, day) {
+            return `${year}-${pad(monthIndex + 1)}-${pad(day)}`;
+        }
+
+        function todayKey() {
+            const now = new Date();
+            return toDateKey(now.getFullYear(), now.getMonth(), now.getDate());
+        }
+
+        function daysInMonth(year, monthIndex) {
+            return new Date(year, monthIndex + 1, 0).getDate();
+        }
+
+        function monthLabel(date) {
+            return new Intl.DateTimeFormat('en', {
+                month: 'long',
+                year: 'numeric'
+            }).format(date);
+        }
+
+        function isSameMonth(dateA, dateB) {
+            return dateA.getFullYear() === dateB.getFullYear() && dateA.getMonth() === dateB.getMonth();
+        }
+
+        function isToday(dateKey) {
+            return dateKey === todayKey();
+        }
+
+        // ---------------------------
+        // Toast
+        // ---------------------------
+        let toastTimer;
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const successClasses = 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+            const errorClasses = 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
+
+            toast.textContent = message;
+            toast.className = `mb-5 p-4 rounded-xl text-center text-sm font-semibold shadow-lg ${type === 'success' ? successClasses : errorClasses}`;
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // ---------------------------
+        // API
+        // ---------------------------
+        async function loadHabits() {
+            if (!requireAuth()) return;
+
+            const list = document.getElementById('habits-list');
+            list.innerHTML = `
+                <div class="py-10 text-center text-gray-500 dark:text-gray-400">
+                    <i class="fa-solid fa-spinner animate-spin text-2xl"></i>
+                    <p class="mt-2 text-sm">Loading habits...</p>
+                </div>`;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/habits2`, {
+                    method: 'GET',
+                    headers: authHeaders()
+                });
+
+                if (handleAuthError(response)) return;
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || data.error || 'Failed to load habits');
+                }
+
+                normalizeData(data);
+                renderAll();
+            } catch (error) {
+                list.innerHTML = `
+                    <div class="py-10 text-center">
+                        <div class="text-rose-500 text-2xl mb-3"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <p class="font-bold">Failed to load data</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">error in server</p>
+                        <button onclick="loadHabits()" class="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold">Try Again</button>
+                    </div>`;
+            }
+        }
+
+        function normalizeData(data) {
+            const habitMap = new Map();
+            logs = {};
+
+            for (const row of Array.isArray(data) ? data : []) {
+                if (!habitMap.has(row.habit_id)) {
+                    habitMap.set(row.habit_id, {
+                        id: row.habit_id,
+                        title: row.title,
+                        todayCompleted: false
+                    });
+                }
+
+                if (row.log_date) {
+                    const dateKey = normalizeDateKey(row.log_date);
+                    const completed = Number(row.is_completed) === 1 || row.is_completed === true;
+
+                    if (!logs[dateKey]) logs[dateKey] = {};
+                    logs[dateKey][row.habit_id] = completed;
+
+                    if (dateKey === todayKey()) {
+                        habitMap.get(row.habit_id).todayCompleted = completed;
+                    }
+                }
+            }
+
+            habits = Array.from(habitMap.values());
+        }
+
+        function normalizeDateKey(value) {
+            if (typeof value === 'string') return value.slice(0, 10);
+            const date = new Date(value);
+            return toDateKey(date.getFullYear(), date.getMonth(), date.getDate());
+        }
+
+        async function saveHabitState(habitId, dateKey, completed) {
+            const habit = habits.find(item => item.id === habitId);
+            if (!habit) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/habits`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        logsHistory: {
+                            [dateKey]: {
+                                [habit.title]: completed
+                            }
+                        }
+                    })
+                });
+
+                if (handleAuthError(response)) return;
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || data.error || 'Failed to save state');
+                }
+
+                if (!logs[dateKey]) logs[dateKey] = {};
+                logs[dateKey][habitId] = completed;
+                habit.todayCompleted = dateKey === todayKey() ? completed : habit.todayCompleted;
+
+                renderAll();
+                showToast(completed ? 'Progress recorded ✓' : 'Progress removed');
+            } catch (error) {
+                showToast( 'Failed to save changes', 'error');
+            }
+        }
+
+        async function addHabit(event) {
+            event.preventDefault();
+
+            const input = document.getElementById('habit-name');
+            const button = document.getElementById('add-habit-btn');
+            const name = input.value.trim();
+
+            if (!name) return;
+
+            if (habits.some(habit => habit.title.toLowerCase() === name.toLowerCase())) {
+                showToast('This habit already exists', 'error');
+                return;
+            }
+
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i>Adding...';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/habits`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        habits: [{
+                            name,
+                            completed: false
+                        }]
+                    })
+                });
+
+                if (handleAuthError(response)) return;
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || data.error || 'Failed to add habit');
+                }
+
+                closeAddHabitModal();
+                input.value = '';
+                await loadHabits();
+                showToast('Habit added successfully');
+            } catch (error) {
+                showToast( 'Failed to add habit', 'error');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = 'Add Habit';
+            }
+        }
+
+        // ---------------------------
+        // Rendering
+        // ---------------------------
+        function renderAll() {
+            renderHabits();
+            renderCalendar();
+            renderSummary();
+        }
+
+        function renderHabits() {
+            const list = document.getElementById('habits-list');
+            const empty = document.getElementById('empty-habits');
+
+            document.getElementById('habits-count').textContent = habits.length;
+
+            if (habits.length === 0) {
+                list.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+
+            list.innerHTML = habits.map(habit => {
+                const completed = habit.todayCompleted;
+                return `
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-2xl bg-white/40 dark:bg-gray-900/40 border border-white/40 dark:border-gray-700/60 hover:bg-white/60 dark:hover:bg-gray-800/50 transition-all">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <div class="w-11 h-11 rounded-xl ${completed ? 'bg-emerald-500/15 text-emerald-500' : 'bg-indigo-500/10 text-indigo-500'} flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid ${completed ? 'fa-check' : 'fa-seedling'}"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="font-bold truncate">${escapeHtml(habit.title)}</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${completed ? 'Completed today' : 'Not completed today yet'}</p>
+                            </div>
+                        </div>
+
+                        <button onclick="toggleToday(${habit.id})"
+                            class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all border ${completed
+                                ? 'bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600'
+                                : 'bg-white/70 dark:bg-gray-800/70 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400'}">
+                            <i class="fa-solid ${completed ? 'fa-check-double' : 'fa-check'} mr-2"></i>
+                            ${completed ? 'Completed Today' : "Check Today"}
+                        </button>
+                    </div>`;
+            }).join('');
+        }
+
+        function renderCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const days = daysInMonth(year, month);
+
+            document.getElementById('month-title').textContent = monthLabel(currentMonth);
+
+            const head = document.getElementById('calendar-head');
+            const body = document.getElementById('calendar-body');
+
+            const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+            head.innerHTML = `
+                <tr class="bg-white/50 dark:bg-gray-900/40">
+                    <th class="habit-name-cell sticky left-0 z-10 px-4 py-3 text-left font-bold bg-white/80 dark:bg-gray-900/90">Habit</th>
+                    ${Array.from({ length: days }, (_, index) => {
+                        const day = index + 1;
+                        const dateKey = toDateKey(year, month, day);
+                        const date = new Date(year, month, day);
+                        const todayClass = isToday(dateKey) ? 'today-ring text-indigo-600 dark:text-indigo-400' : '';
+                        return `<th class="day-cell px-1 py-2 font-bold border-l border-gray-200/70 dark:border-gray-700/70 ${todayClass}" title="${weekdayNames[date.getDay()]}">
+                            <div class="text-xs">${day}</div>
+                            <div class="text-[9px] font-normal text-gray-400 mt-0.5">${weekdayNames[date.getDay()]}</div>
+                        </th>`;
+                    }).join('')}
+                </tr>`;
+
+            if (habits.length === 0) {
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="${days + 1}" class="px-4 py-12 text-center text-gray-500 dark:text-gray-400">
+                            Add a habit to view the monthly table.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            body.innerHTML = habits.map(habit => {
+                const cells = Array.from({ length: days }, (_, index) => {
+                    const day = index + 1;
+                    const dateKey = toDateKey(year, month, day);
+                    const completed = logs[dateKey]?.[habit.id] === true;
+                    const isCurrentDay = isToday(dateKey);
+
+                    return `
+                        <td class="day-cell p-1 border-t border-l border-gray-200/70 dark:border-gray-700/70 ${isCurrentDay ? 'bg-indigo-500/5' : ''}">
+                            <button onclick="toggleDay(${habit.id}, '${dateKey}')"
+                                aria-label="${completed ? 'Uncheck' : 'Check'} ${escapeHtml(habit.title)} on ${dateKey}"
+                                class="w-full h-full min-h-[40px] rounded-lg flex items-center justify-center transition-all ${completed
+                                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm'
+                                    : `bg-gray-200/70 dark:bg-gray-700/80 hover:bg-indigo-100 dark:hover:bg-gray-600 text-transparent ${isCurrentDay ? 'ring-2 ring-indigo-300 dark:ring-indigo-500' : ''}`}">
+                                <i class="fa-solid fa-check text-xs"></i>
+                            </button>
+                        </td>`;
+                }).join('');
+
+                return `
+                    <tr class="group hover:bg-white/25 dark:hover:bg-gray-800/25 transition">
+                        <td class="habit-name-cell sticky left-0 z-10 px-4 py-3 border-t border-gray-200/70 dark:border-gray-700/70 bg-white/85 dark:bg-gray-900/90 font-semibold">
+                            <div class="flex items-center gap-3">
+                                <span class="w-2.5 h-2.5 rounded-full ${habit.todayCompleted ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'}"></span>
+                                <span class="truncate" title="${escapeHtml(habit.title)}">${escapeHtml(habit.title)}</span>
+                            </div>
+                        </td>
+                        ${cells}
+                    </tr>`;
+            }).join('');
+        }
+
+        function renderSummary() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const days = daysInMonth(year, month);
+            const now = new Date();
+            const elapsedDays = isSameMonth(currentMonth, now) ? now.getDate() : (currentMonth < new Date(now.getFullYear(), now.getMonth(), 1) ? days : 0);
+
+            let total = 0;
+            const possible = habits.length * elapsedDays;
+
+            for (let day = 1; day <= elapsedDays; day++) {
+                const key = toDateKey(year, month, day);
+                for (const habit of habits) {
+                    if (logs[key]?.[habit.id] === true) total++;
+                }
+            }
+
+            document.getElementById('month-completions').textContent = total;
+            document.getElementById('month-progress').textContent = possible ? `${Math.round((total / possible) * 100)}%` : '0%';
+        }
+
+        async function toggleToday(habitId) {
+            const habit = habits.find(item => item.id === habitId);
+            if (!habit) return;
+            await saveHabitState(habitId, todayKey(), !habit.todayCompleted);
+        }
+
+        async function toggleDay(habitId, dateKey) {
+            const currentState = logs[dateKey]?.[habitId] === true;
+            await saveHabitState(habitId, dateKey, !currentState);
+        }
+
+        function changeMonth(amount) {
+            currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + amount, 1);
+            renderAll();
+        }
+
+        // ---------------------------
+        // Modal
+        // ---------------------------
+        function openAddHabitModal() {
+            const modal = document.getElementById('add-habit-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => document.getElementById('habit-name').focus(), 50);
+        }
+
+        function closeAddHabitModal() {
+            document.getElementById('add-habit-modal').classList.add('hidden');
+        }
+
+        document.getElementById('add-habit-modal').addEventListener('click', (event) => {
+            if (event.target.id === 'add-habit-modal') closeAddHabitModal();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeAddHabitModal();
+        });
+
+        // ---------------------------
+        // Safe HTML
+        // ---------------------------
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        // ---------------------------
+        // Start
+        // ---------------------------
+        window.addEventListener('DOMContentLoaded', async () => {
+            applyStoredTheme();
+            if (!requireAuth()) return;
+            await loadHabits();
+        });
+    </script>
+</body>
+</html>
