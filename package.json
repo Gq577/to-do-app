@@ -2,7 +2,7 @@
   "name": "front_end",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "mysql-user-login.js",
   "scripts": {
     "test": "jest --runInBand --forceExit",
     "start": "node server.js"
@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

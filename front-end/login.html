@@ -1,156 +1,300 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول</title>
+    <title>Sign In and Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Cairo', sans-serif;
         }
-
-        .login-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-
-        .login-container h2 {
-            margin-bottom: 24px;
-            color: #333333;
-            text-align: center;
-            font-size: 24px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555555;
-            font-size: 14px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cccccc;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        .input-group input:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #667eea;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .login-btn:hover {
-            background-color: #5563c1;
-        }
-
-        .footer-text {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 13px;
-            color: #777777;
-        }
-
-        .footer-text a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .footer-text a:hover {
-            text-decoration: underline;
+        .dark .glass-card {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
     </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-slate-900 min-h-screen flex items-center justify-center p-4 transition-colors duration-500">
 
-    <div class="login-container">
-        <h2>تسجيل الدخول</h2>
-        <!-- تم استبدال الفورم بـ div عادي لتجنب أي سلوك إرسال تلقائي -->
-        <div>
-            <div class="input-group">
-                <label for="username">اسم المستخدم</label>
-                <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+    <button onclick="toggleTheme()" class="absolute top-5 right-5 p-3 rounded-full glass-card text-gray-700 dark:text-gray-200 hover:scale-105 transition-all shadow-md focus:outline-none" aria-label="Toggle Theme">
+        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+    </button>
+
+    <div class="w-full max-w-md">
+        
+        <div id="toast" class="mb-4 hidden p-4 rounded-xl text-center text-sm font-semibold shadow-lg transition-all duration-300 transform translate-y-[-10px]"></div>
+
+        <div class="glass-card shadow-2xl rounded-3xl p-8 transition-all duration-500 relative overflow-hidden">
+            
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-tr from-indigo-600 to-pink-500 rounded-2xl mx-auto flex items-center justify-center text-white text-2xl shadow-lg mb-4 transform hover:rotate-6 transition-transform">
+                    <i id="header-icon" class="fa-solid fa-lock"></i>
+                </div>
+                <h1 id="form-title" class="text-2xl font-bold text-gray-800 dark:text-white">Sign In</h1>
+                <p id="form-subtitle" class="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter your username and password to continue</p>
             </div>
 
-            <div class="input-group">
-                <label for="password">كلمة المرور</label>
-                <input type="password" id="password" placeholder="أدخل كلمة المرور">
+            <div class="flex bg-gray-200/60 dark:bg-gray-800/60 p-1.5 rounded-2xl mb-8 relative">
+                <div id="tab-indicator" class="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white dark:bg-gray-700 rounded-xl shadow-md transition-all duration-300 ease-in-out left-1.5"></div>
+                <button onclick="switchMode('login')" id="login-tab" class="flex-1 py-2.5 text-sm font-bold text-gray-800 dark:text-white z-10 transition-colors">Sign In</button>
+                <button onclick="switchMode('signup')" id="signup-tab" class="flex-1 py-2.5 text-sm font-bold text-gray-500 dark:text-gray-400 z-10 transition-colors">Sign Up</button>
             </div>
 
-           
-            <button type="button" class="login-btn" id="loginBtn">دخول</button>
-        </div>
+            <form id="auth-form" onsubmit="handleSubmit(event)" class="space-y-5">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 uppercase tracking-wider">Username</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="username" required placeholder="Enter your username"
+                            class="w-full pr-4 pl-11 py-3 bg-white/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all">
+                    </div>
+                </div>
 
-        <div class="footer-text">
-            ليس لديك حساب؟ <a href="#">إنشاء حساب جديد</a>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 uppercase tracking-wider">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+                        <input type="password" id="password" required placeholder="••••••••"
+                            class="w-full pr-11 pl-11 py-3 bg-white/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none">
+                            <i id="eye-icon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-pink-500 hover:from-indigo-700 hover:to-pink-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-300 transform active:scale-[0.98]">
+                    Sign In
+                </button>
+            </form>
+
+            <div id="welcome-view" class="hidden text-center py-6 space-y-4">
+                <div class="w-20 h-20 bg-emerald-500/10 text-emerald-500 rounded-full mx-auto flex items-center justify-center text-3xl mb-2 animate-bounce">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800 dark:text-white">Welcome, <span id="logged-user" class="text-indigo-600 dark:text-indigo-400"></span>!</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Data sent and request processed successfully via the server.</p>
+                <button onclick="handleLogout()" class="mt-4 px-6 py-2.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white text-sm font-semibold rounded-xl transition-all border border-rose-500/20">
+                    Sign Out
+                </button>
+            </div>
+
+            
         </div>
     </div>
 
     <script>
-        function sendData(data) {
-            fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    
-                },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(response => {
-                if (response.token){
-                    localStorage.setItem('token', response.token);
-                    window.location.href = "/index.html"
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
-        function $(a) {
-            return document.getElementById(a);
+        let currentMode = 'login';
+
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').className = 'fa-solid fa-sun text-lg';
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('theme-icon').className = 'fa-solid fa-moon text-lg';
         }
 
-        // الاستماع لحدث النقر على الزر مباشرة
-        $("loginBtn").addEventListener("click", () => {
-            // جلب القيم من حقول الإدخال وإرسالها عبر الـ fetch
-            sendData({
-                username: $("username").value, 
-                password: $("password").value
-            });
+        window.addEventListener('DOMContentLoaded', () => {
+            const activeUser = localStorage.getItem('activeUser');
+            if (activeUser) {
+                showWelcomeView(activeUser);
+            }
         });
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-icon').className = 'fa-solid fa-moon text-lg';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-icon').className = 'fa-solid fa-sun text-lg';
+            }
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const indicator = document.getElementById('tab-indicator');
+            const loginTab = document.getElementById('login-tab');
+            const signupTab = document.getElementById('signup-tab');
+            const formTitle = document.getElementById('form-title');
+            const formSubtitle = document.getElementById('form-subtitle');
+            const submitBtn = document.getElementById('submit-btn');
+            const headerIcon = document.getElementById('header-icon');
+
+            if (mode === 'login') {
+                indicator.style.left = '6px';
+                indicator.style.right = 'auto';
+                loginTab.className = 'flex-1 py-2.5 text-sm font-bold text-gray-800 dark:text-white z-10 transition-colors';
+                signupTab.className = 'flex-1 py-2.5 text-sm font-bold text-gray-500 dark:text-gray-400 z-10 transition-colors';
+                formTitle.textContent = 'Sign In';
+                formSubtitle.textContent = 'Send request to /api/login';
+                submitBtn.textContent = 'Sign In';
+                headerIcon.className = 'fa-solid fa-lock';
+            } else {
+                indicator.style.left = 'calc(50% + 3px)';
+                indicator.style.right = '6px';
+                loginTab.className = 'flex-1 py-2.5 text-sm font-bold text-gray-500 dark:text-gray-400 z-10 transition-colors';
+                signupTab.className = 'flex-1 py-2.5 text-sm font-bold text-gray-800 dark:text-white z-10 transition-colors';
+                formTitle.textContent = 'Create New Account';
+                formSubtitle.textContent = 'Send request to /api/sign-in';
+                submitBtn.textContent = 'Create Account';
+                headerIcon.className = 'fa-solid fa-user-plus';
+            }
+            hideToast();
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.className = 'fa-solid fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `mb-4 p-4 rounded-xl text-center text-sm font-semibold shadow-lg transition-all duration-300 transform translate-y-0 ${
+                type === 'success' 
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' 
+                    : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+            }`;
+            toast.classList.remove('hidden');
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('hidden');
+        }
+
+        function mockBackendHandler(endpoint, data) {
+            let users = JSON.parse(localStorage.getItem('app_users')) || {};
+            
+            if (endpoint === '/api/sign-in') {
+                if (!data.username || data.username.length < 3) {
+                    return { ok: false, status: 400, message: 'Username must be at least 3 characters' };
+                }
+                if (!data.password || data.password.length < 4) {
+                    return { ok: false, status: 400, message: 'Password must not be less than 4 characters' };
+                }
+                if (users[data.username]) {
+                    return { ok: false, status: 409, message: 'Username is already taken' };
+                }
+                users[data.username] = data.password;
+                localStorage.setItem('app_users', JSON.stringify(users));
+                return { ok: true, status: 201, message: 'Account created successfully' };
+            } 
+            
+            if (endpoint === '/api/login') {
+                if (!users[data.username]) {
+                    return { ok: false, status: 401, message: 'Username is not registered' };
+                }
+                if (users[data.username] !== data.password) {
+                    return { ok: false, status: 401, message: 'Incorrect password' };
+                }
+                return { ok: true, status: 200, message: 'Signed in successfully' };
+            }
+            return { ok: false, status: 404, message: 'Endpoint not found' };
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            const endpoint = (currentMode === 'signup') ? '/api/sign-in' : '/api/login';
+            const payload = { username, password };
+
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Processing...';
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+            
+                const data = await res.json();
+            
+                if (res.ok) {
+                    showToast( 'Operation completed successfully', 'success');
+
+                    if (currentMode === 'signup') {
+                        setTimeout(() => switchMode('login'), 1200);
+                    } else {
+                        localStorage.setItem('token', data.token); 
+                        localStorage.removeItem('myHabits');
+                        setTimeout(() => showWelcomeView(username), 1000);
+                        window.location.href = "/habit.html"
+                    }
+                } else {
+                    showToast('An error occurred, please try again', 'error');
+                }
+            
+            } catch (error) {
+                showToast('Failed to connect to the server', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        }
+
+        function showWelcomeView(username) {
+            document.getElementById('auth-form').classList.add('hidden');
+            document.querySelector('.flex.bg-gray-200\\/60').classList.add('hidden');
+            document.getElementById('form-title').parentElement.classList.add('hidden');
+            
+            document.getElementById('logged-user').textContent = username;
+            document.getElementById('welcome-view').classList.remove('hidden');
+            hideToast();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('activeUser');
+            document.getElementById('welcome-view').classList.add('hidden');
+            document.getElementById('auth-form').classList.remove('hidden');
+            document.querySelector('.flex.bg-gray-200\\/60').classList.remove('hidden');
+            document.getElementById('form-title').parentElement.classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            hideToast();
+        }
     </script>
 </body>
 </html>
