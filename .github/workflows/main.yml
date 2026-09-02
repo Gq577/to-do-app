@@ -9,15 +9,18 @@ jobs:
   test-the-code:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-node@v6.2.0
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v6.5.0
       - name: install freamworks
         run: npm install
+      - name: install jest
+        run: npm install --save-dev jest supertest mongodb-memory-server
       - name: test by jest
         run: npm test
 
 
   build-and-push:
+    needs: test-the-code
     runs-on: ubuntu-latest
 
     steps:
@@ -29,7 +32,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASS }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
       
       - name: Set up Docker Buildx
@@ -44,5 +47,26 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USER }}/to-do-app:latest
             ${{ secrets.DOCKER_USER }}/to-do-app:${{ github.sha }}
+
           
-        
+  cd:
+    needs: build-and-push
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: connent-to-EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            mkdir hi
+            docker stop to-do-app-continaer || true
+            docker rm to-do-app-continaer || true
+            docker pull ${{ secrets.DOCKER_USER }}/to-do-app:latest
+            docker run -d -p 80:3000 --name to-do-app-continaer ${{ secrets.DOCKER_USER }}/to-do-app:latest
+            docker image prune -f
+          
+      
+    
