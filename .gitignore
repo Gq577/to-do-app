@@ -2,3 +2,4 @@ db.js
 db2.js
 node_modules/
 oldScript-for-learn-problem/
+.env

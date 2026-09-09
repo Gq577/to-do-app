@@ -13,7 +13,10 @@ app.get("/", (req, res) => {
 
 app.get("/style.css" , (req,res) => {
     res.sendFile(path.join(__dirname,"front-end" , "style.css"))
-})
+});
+app.get("/health", (req, res) => {
+    res.status(200).send("OK");
+});
 app.post("/api", async (req, res) => {
     const data = req.body;
     
