@@ -93,12 +93,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            
-            docker stop to-do-app-continaer || true
-            docker rm to-do-app-continaer || true
-            docker pull ${{ secrets.DOCKER_USER }}/to-do-app:latest
-            docker run -d -p 80:3000 --name to-do-app-continaer ${{ secrets.DOCKER_USER }}/to-do-app:latest
-            docker image prune -f
+            ./deployment.sh ${{ secrets.DOCKER_USER }}/to-do-app:${{ github.sha }}
           
       
     
