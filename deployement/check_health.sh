@@ -6,6 +6,7 @@ if [ -z "$new_images" ]; then
         echo "there is no image"
         exit 1;
 fi
+echo "=====================================================================================";
 date >>logfile
 if docker pull "$new_images" >> logfile 2>&1; then
 	echo "the image $new_images is download" >> logfile
