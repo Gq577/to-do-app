@@ -18,21 +18,7 @@ const pool = mysql.createPool({
     connectionLimit: 10
 });
 
-app.get("/style.css" , (req,res) => {
-    res.sendFile(path.join(__dirname,"front-end" , "style.css"))
-});
-app.get("/health", (req, res) => {
-    res.status(200).send("OK");
-});
-app.post("/api", async (req, res) => {
-    const data = req.body;
-    
-    
-    if (!data.sport || !data.study || !data.sleep || !data.wakeup) {
-        return res.status(400).json({ error: "Missing fields" });
-    }
-    
-});
+const SECRET_KEY = process.env.SECRET_KEY;
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
