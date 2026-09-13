@@ -19,7 +19,7 @@ echo "=>  run a test container" >> logfile;
 new_container_id=$(docker run --name to-do-app-test -d -p 3000:3000 $new_images >> logfile 2>&1);
 echo "=>  check health the test container" >> logfile;
 for ((i =0 ; i < 12 ; i++)) do
-	if curl -fsS http://localhost:3000 >>logfile ;then
+	if curl -fsS http://localhost:3000/health >>logfile ;then
 		echo ""
 		echo "=>  the container is work" >> logfile
 
@@ -65,7 +65,7 @@ prodaction_container_id=$(docker run -d -p $new_port:3000 --name prodaction-to-d
 echo "=>  test the prodaction container" >> logfile;
 
 for ((i =0 ; i < 12 ; i++)) do
-	if curl -fsS http://localhost:$new_port >>logfile ;then
+	if curl -fsS http://localhost:$new_port/health >>logfile ;then
 		echo ""
 		echo "=>  the container is healthy" >> logfile
 

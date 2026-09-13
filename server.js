@@ -96,6 +96,14 @@ app.get("/api/habits2", authenticateToken, async (req, res) => {
     }
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
