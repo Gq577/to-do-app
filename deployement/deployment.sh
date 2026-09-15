@@ -17,7 +17,7 @@ fi
 
 echo "=>  run a test container" >> logfile;
 echo "### docker run --name to-do-app-test -d -p 3000:3000 $new_images" >>logfile
-new_container_id=$(docker run --name to-do-app-test -d -p 3000:3030 $new_images 2>&1);
+new_container_id=$(docker run --name to-do-app-test -d -p 3000:3000 $new_images 2>&1);
 echo "new_container_id =$new_container_id" >>logfile
 echo "=>  check health the test container" >> logfile;
 for ((i =0 ; i < 12 ; i++)) do
@@ -78,7 +78,7 @@ fi
 echo "### container_number++" >>logfile
 ((container_number++))
 echo "new_port =$new_port container_number=$container_number" >>logfile
-echo "### docker rum -d -p $new_port:3030 --name prodaction-to-do-app-$container_number $new_images" >> logfile
+echo "### docker rum -d -p $new_port:3000 --name prodaction-to-do-app-$container_number $new_images" >> logfile
 prodaction_container_id=$(docker run -d -p $new_port:3000 --name prodaction-to-do-app-$container_number $new_images 2>&1)
 echo "prodacation_container_id =$prodaction_container_id" >> logfile
 
