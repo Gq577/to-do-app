@@ -16,7 +16,11 @@ else
 fi
 
 echo "=>  run a test container" >> logfile;
+<<<<<<< HEAD
 echo "### docker run --name to-do-app-test -d -p 3000:3000  $new_images" >>logfile
+=======
+echo "### docker run --name to-do-app-test -d -p 3000:3000 $new_images" >>logfile
+>>>>>>> 5444c24a52d7636adaac981d4e84a9e82261b7d2
 new_container_id=$(docker run --name to-do-app-test -d -p 3000:3000 $new_images 2>&1);
 echo "new_container_id =$new_container_id" >>logfile
 echo "=>  check health the test container" >> logfile;
@@ -76,8 +80,10 @@ else
 	new_port=80;
 fi
 ((container_number++))
+<<<<<<< HEAD
 echo "### docker rum -d -p $new_port:3000 --name prodaction-to-do-app-$container_number $new_images" >> logfile
 prodaction_container_id=$(docker run -d -p $new_port:3000 --name --network app-network prodaction-to-do-app-$container_number $new_images 2>&1)
+
 echo "prodacation_container_id =$prodaction_container_id" >> logfile
 
 echo "=>  test the prodaction container" >> logfile;
