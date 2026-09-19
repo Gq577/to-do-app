@@ -16,11 +16,8 @@ else
 fi
 
 echo "=>  run a test container" >> logfile;
-<<<<<<< HEAD
-echo "### docker run --name to-do-app-test -d -p 3000:3000  $new_images" >>logfile
-=======
+
 echo "### docker run --name to-do-app-test -d -p 3000:3000 $new_images" >>logfile
->>>>>>> 5444c24a52d7636adaac981d4e84a9e82261b7d2
 new_container_id=$(docker run --name to-do-app-test -d -p 3000:3000 $new_images 2>&1);
 echo "new_container_id =$new_container_id" >>logfile
 echo "=>  check health the test container" >> logfile;
@@ -79,8 +76,7 @@ if [ $new_port -eq 80 ]; then
 else
 	new_port=80;
 fi
-((container_number++))
-<<<<<<< HEAD
+echo "=> run a prodaction container" >> logfile
 echo "### docker rum -d -p $new_port:3000 --name prodaction-to-do-app-$container_number $new_images" >> logfile
 prodaction_container_id=$(docker run -d -p $new_port:3000 --name --network app-network prodaction-to-do-app-$container_number $new_images 2>&1)
 
@@ -136,7 +132,8 @@ if docker exec nginx nginx -t >> logfile 2>&1; then
         else
             echo "=> nginx rollback config is invalid" >> logfile
         fi
-
+			echo "=>  stop and remove the prodaction container" >> logfile 
+			docker rm -f $prodaction_container_id >> logfile 2>&1|| true ;
         exit 1
     fi
 
@@ -144,12 +141,14 @@ else
     echo "=> nginx configuration is invalid, rollback nginx config" >> logfile
 
     cat container_info/old_nginx_script > nginx/nginx.conf
-
+	echo "=>  stop and remove the prodaction container" >> logfile 
+	docker rm -f $prodaction_container_id >> logfile 2>&1|| true ;
     exit 1
 fi
 
+
+((container_number++))
 echo "=>  update the state" >>logfile
-echo "=====test the variable==========" >> logfile
 echo "prodaction conatiner id =$prodaction_container_id" >>logfile
 echo "continaer number = $container_number" >> logfile
 echo "new port $new_port" >> logfile
