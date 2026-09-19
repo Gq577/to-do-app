@@ -78,7 +78,7 @@ else
 fi
 echo "=> run a prodaction container" >> logfile
 echo "### docker rum -d -p $new_port:3000 --name prodaction-to-do-app-$container_number $new_images" >> logfile
-prodaction_container_id=$(docker run -d -p $new_port:3000 --name --network app-network prodaction-to-do-app-$container_number $new_images 2>&1)
+prodaction_container_id=$(docker run -d -p $new_port:3000 --network app-network --name prodaction-to-do-app-$container_number $new_images 2>&1)
 
 echo "prodacation_container_id =$prodaction_container_id" >> logfile
 
