@@ -30,12 +30,18 @@ todo-habit-app/
 │   ├── habits.html
 │   └── 
 │
+├── deployement/
+│   └── deployment.sh        #deployement file in EC2 server
+├──.github/workflows/
+│   ├── main.yml            #The pipeline script in git actions
+│   └── sql-test.yml
 ├── server.js                # Backend application logic
 ├── package.json             
 ├── server.test.js          
 ├── .dockerfile               
 ├── .dockerignore             
-├── . gitignore
+├── .gitignore
+├── pipeline.png
 └── README.md
 ```
 
