@@ -40,11 +40,12 @@ todo-habit-app/
 ```
 
 ## The pipe line
-(https://github.com/Gq577/to-do-app/edit/master/pipeline.html)
+![The pipe line}(https://github.com/Gq577/to-do-app/edit/master/pipeline.png)
 
 ---
-## How to Install
-<summary> Prerequisites</summary>
+<details>
+<summary/>How to Install
+Prerequisites</summary>
 Make sure you have the following installed on your machine:
 
 Node.js (v18 or newer)
@@ -87,13 +88,14 @@ Clone the Repository:
 ```Bash
 git clone [https://github.com/your-username/todo-habit-app.git](https://github.com/your-username/todo-habit-app.git)
 cd todo-habit-app
-Install Dependencies:
 ```
+Install Dependencies:
 ```Bash
 npm install
+```
 Configure Environment Variables:
 Create a .env file in the root directory of your project and configure your environment details:
-```
+
 ```
 PORT=3000
 DB_HOST=localhost
@@ -107,11 +109,13 @@ To run tests (if configured):
 
 ```Bash
 npm test
-To start the application server:
 ```
+To start the application server:
 ```Bash
 npm start
 ```
 Open your browser and navigate to: http://localhost:3000
 Contribution
 Contributions are welcome! Feel free to fork the repository and submit a Pull Request for any improvements.
+<details>
+
