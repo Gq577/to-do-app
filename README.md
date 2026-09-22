@@ -40,8 +40,8 @@ todo-habit-app/
 ```
 
 ## The pipe line
-![The pipe line}(https://github.com/Gq577/to-do-app/edit/master/pipeline.png)
 
+![The pipe line](./pipeline.png)
 ---
 <details>
 <summary/>How to Install
