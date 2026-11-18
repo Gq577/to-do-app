@@ -47,7 +47,7 @@ todo-habit-app/
 
 ## The pipe line
 
-![The pipe line](./pipeline.png)
+![The pipe line](./image/pipeline.png)
 ---
 <details>
 <summary/>How to Install
