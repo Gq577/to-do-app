@@ -16,7 +16,7 @@ log() {
     echo "$1" >> "$LOGFILE"
 }
 
-# تهيئة أول تشغيل إذا كانت ملفات Nginx غير موجودة
+
 if [ ! -f ./nginx/nginx.conf ]; then
     cat <<'EOF' > ./nginx/nginx.conf
 server {
@@ -37,7 +37,7 @@ container_number=$(cat ./container_info/container_number 2>/dev/null || echo "1"
 new_container_name="production-to-do-app-${container_number}"
 new_container_id=""
 
-# جلب الكونتينر النشط الحالي عبر Label (مع الرجوع للملف كاحتياط)
+
 old_container=$(docker ps \
     --filter "label=app=to-do-app" \
     --filter "label=role=active" \
@@ -71,7 +71,6 @@ trap cleanup_on_error EXIT
 apply_nginx_config() {
     local config_content="$1"
 
-    # cp ./nginx/nginx.conf "$BACKUP_CONF"
     printf "%s\n" "$config_content" > ./nginx/nginx.conf
 
     if ! docker exec nginx nginx -t >> "$LOGFILE" 2>&1; then
@@ -100,7 +99,7 @@ fi
 log "the image $new_image is downloaded"
 
 log "=> run a production container: $new_container_name"
-if ! new_container_id=$(docker run -d -p 3000:3000 \
+if ! new_container_id=$(docker run -d  \
     --network app-network \
     --label app=to-do-app \
     --label role=canary \
@@ -111,7 +110,6 @@ if ! new_container_id=$(docker run -d -p 3000:3000 \
 fi
 log "production_container_id=$new_container_id"
 
-# 1. إعداد Canary: توجيه /test للكونتينر الجديد وإبقاء / على القديم إن وجد
 root_target="$new_container_name"
 if [ -n "$old_container" ]; then
     root_target="$old_container"
@@ -136,7 +134,6 @@ if ! apply_nginx_config "$canary_config"; then
     exit 1
 fi
 
-# 2. فحص صحة الكونتينر الجديد
 healthy=false
 for ((i = 0; i < 12; i++)); do
     if curl -fsS http://localhost/test >> "$LOGFILE" 2>&1; then
@@ -154,7 +151,6 @@ if [ "$healthy" = false ]; then
     exit 1
 fi
 
-# 3. تحويل كامل الترافيك إلى الكونتينر الجديد
 final_config=$(cat <<EOF
 server {
     listen 80;
