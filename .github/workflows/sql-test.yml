@@ -24,7 +24,7 @@ jobs:
         options: >-
           --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptestpassword"
           --health-interval=2s
-          --health-timeout=3s
+          --health-timeout=2s
           --health-retries=10
 
     steps:
