@@ -75,6 +75,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USER }}/to-do-app:latest
             ${{ secrets.DOCKER_USER }}/to-do-app:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
 
       - name: Deploy
